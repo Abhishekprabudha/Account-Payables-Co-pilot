@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Account Payables Copilot</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">AP Copilot</div>
+      <div class="muted">Carrier invoice adjudication</div>
+      <div class="sidebar-block">
+        <div class="sidebar-title">Workflow</div>
+        <ol>
+          <li>Upload contract</li>
+          <li>Upload ERP raw extract</li>
+          <li>Upload carrier invoice</li>
+          <li>Review payable recommendation</li>
+        </ol>
+      </div>
+      <div class="sidebar-block">
+        <div class="sidebar-title">API</div>
+        <input id="apiBase" value="http://127.0.0.1:8000" />
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="hero">
+        <div>
+          <h1>Account Payables Copilot</h1>
+          <p>Upload the contract, ERP raw extract, and carrier invoice. The copilot recommends the payable amount and explains the logic shipment by shipment.</p>
+        </div>
+        <button id="demoBtn" class="ghost-btn">Use sample files</button>
+      </header>
+
+      <section class="upload-grid">
+        <label class="upload-card">
+          <span>Contract</span>
+          <input type="file" id="contractFile" accept=".docx" />
+          <small>DOCX agreement or MSA</small>
+        </label>
+        <label class="upload-card">
+          <span>ERP Raw Extract</span>
+          <input type="file" id="erpFile" accept=".xlsx" />
+          <small>Shipment_Raw and event data</small>
+        </label>
+        <label class="upload-card">
+          <span>Carrier Invoice</span>
+          <input type="file" id="invoiceFile" accept=".xlsx,.docx" />
+          <small>Invoice with billing detail annexure</small>
+        </label>
+      </section>
+
+      <section class="actions-row">
+        <button id="analyzeBtn" class="primary-btn">Analyze payable amount</button>
+        <div id="statusPill" class="status-pill idle">Waiting for files</div>
+      </section>
+
+      <section id="resultsSection" class="results hidden">
+        <div class="metrics-grid" id="metricsGrid"></div>
+        <div class="two-col">
+          <div class="panel">
+            <h2>Rationale</h2>
+            <ul id="rationaleList" class="clean-list"></ul>
+          </div>
+          <div class="panel">
+            <h2>Contract signals</h2>
+            <div id="clausesList" class="clause-stack"></div>
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="panel">
+            <h2>Held reason breakdown</h2>
+            <div id="heldReasons"></div>
+          </div>
+          <div class="panel">
+            <h2>Diagnostics</h2>
+            <pre id="diagnosticsBox" class="diag-box"></pre>
+          </div>
+        </div>
+        <div class="panel wide-panel">
+          <div class="panel-header">
+            <h2>Shipment decisions</h2>
+            <input id="decisionFilter" placeholder="Filter by shipment id / decision / reason" />
+          </div>
+          <div class="table-wrap">
+            <table id="decisionTable">
+              <thead>
+                <tr>
+                  <th>Shipment</th>
+                  <th>Decision</th>
+                  <th>Invoice amount</th>
+                  <th>ERP status</th>
+                  <th>Reasons</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
