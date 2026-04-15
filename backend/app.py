@@ -5,6 +5,7 @@ from pathlib import Path
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from services.contract_parser import extract_contract_text, extract_key_clauses, extract_contract_metadata
 from services.erp_parser import load_erp
 from services.invoice_parser import load_invoice
@@ -12,6 +13,9 @@ from services.payable_engine import analyze_payable
 
 
 app = FastAPI(title="Account Payables Copilot API", version="1.0.0")
+BASE_DIR = Path(__file__).resolve().parent.parent
+FRONTEND_DIR = BASE_DIR / "frontend"
+SAMPLE_DATA_DIR = BASE_DIR / "sample_data"
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -51,3 +55,10 @@ async def analyze(
         invoice = load_invoice(invoice_path)
         result = analyze_payable(contract_meta, erp, invoice, clauses)
         return JSONResponse(result.model_dump())
+
+
+if SAMPLE_DATA_DIR.exists():
+    app.mount("/sample_data", StaticFiles(directory=str(SAMPLE_DATA_DIR)), name="sample_data")
+
+if FRONTEND_DIR.exists():
+    app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
