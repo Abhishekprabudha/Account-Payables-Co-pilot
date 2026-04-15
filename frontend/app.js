@@ -1,5 +1,6 @@
 const el = (id) => document.getElementById(id);
 let latestDecisions = [];
+const API_BASE = 'https://intellivision.aionos.co/ap-copilot';
 
 function setStatus(text, cls) {
   const pill = el('statusPill');
@@ -108,14 +109,13 @@ function downloadDecisionDump() {
 }
 
 async function analyzeWithFiles(contractFile, erpFile, invoiceFile) {
-  const apiBase = el('apiBase').value.trim().replace(/\/$/, '');
   const form = new FormData();
   form.append('contract_file', contractFile);
   form.append('erp_file', erpFile);
   form.append('invoice_file', invoiceFile);
   setStatus('Analyzing', 'loading');
   try {
-    const response = await fetch(`${apiBase}/analyze`, { method: 'POST', body: form });
+    const response = await fetch(`${API_BASE}/analyze`, { method: 'POST', body: form });
     if (!response.ok) {
       const text = await response.text();
       throw new Error(text || 'Request failed');
