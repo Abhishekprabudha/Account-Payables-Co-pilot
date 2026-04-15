@@ -78,6 +78,35 @@ function applyFilter() {
   `).join('');
 }
 
+function downloadDecisionDump() {
+  if (!latestDecisions.length) {
+    alert('No shipment decisions available yet. Run analysis first.');
+    return;
+  }
+  if (typeof XLSX === 'undefined') {
+    alert('Excel export is not available right now. Please refresh and try again.');
+    return;
+  }
+
+  const rows = latestDecisions.map((item) => ({
+    Shipment_ID: item.shipment_id,
+    Decision: item.decision,
+    Invoice_Amount: Number(item.invoice_amount || 0),
+    ERP_Status: item.erp_status || '',
+    POD_Flag: item.pod_flag || '',
+    Damage_Flag: item.damage_flag || '',
+    Shortage_Flag: item.shortage_flag || '',
+    Reasons: (item.reasons || []).join(' | '),
+  }));
+
+  const workbook = XLSX.utils.book_new();
+  const worksheet = XLSX.utils.json_to_sheet(rows);
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Shipment Decisions');
+
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+  XLSX.writeFile(workbook, `shipment-decisions-${timestamp}.xlsx`);
+}
+
 async function analyzeWithFiles(contractFile, erpFile, invoiceFile) {
   const apiBase = el('apiBase').value.trim().replace(/\/$/, '');
   const form = new FormData();
@@ -116,6 +145,7 @@ el('analyzeBtn').addEventListener('click', () => {
 });
 
 el('decisionFilter').addEventListener('input', applyFilter);
+el('downloadDecisionsBtn').addEventListener('click', downloadDecisionDump);
 
 el('demoBtn').addEventListener('click', async () => {
   const paths = [

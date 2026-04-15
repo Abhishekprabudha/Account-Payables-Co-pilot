@@ -98,7 +98,9 @@ body {
 .diag-box { white-space: pre-wrap; color: var(--muted); }
 .wide-panel { margin-top: 18px; }
 .panel-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.decision-controls { display: flex; align-items: center; gap: 10px; }
 .panel-header input { min-width: 280px; border-radius: 12px; border: 1px solid var(--border); background: #12192b; color: var(--text); padding: 10px 12px; }
+.decision-controls .ghost-btn { padding: 10px 14px; border-radius: 12px; white-space: nowrap; }
 .table-wrap { overflow: auto; margin-top: 14px; }
 table { width: 100%; border-collapse: collapse; }
 th, td { border-bottom: 1px solid var(--border); padding: 12px; vertical-align: top; text-align: left; }
@@ -112,4 +114,7 @@ th, td { border-bottom: 1px solid var(--border); padding: 12px; vertical-align: 
   .app-shell { grid-template-columns: 1fr; }
   .sidebar { border-right: 0; border-bottom: 1px solid var(--border); }
   .upload-grid, .metrics-grid, .two-col { grid-template-columns: 1fr; }
+  .panel-header { flex-direction: column; align-items: stretch; }
+  .decision-controls { flex-direction: column; align-items: stretch; }
+  .panel-header input { min-width: 0; width: 100%; }
 }
