@@ -65,9 +65,26 @@ body {
 .results { margin-top: 22px; }
 .hidden { display: none; }
 .metrics-grid { display: grid; grid-template-columns: repeat(6, minmax(0,1fr)); gap: 14px; }
-.metric-card { border: 1px solid var(--border); background: var(--panel); border-radius: 22px; padding: 18px; }
+.metric-card {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 22px;
+  padding: 18px;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
 .metric-card .label { color: var(--muted); font-size: 13px; }
-.metric-card .value { font-size: 24px; font-weight: 800; margin-top: 8px; }
+.metric-card .value {
+  font-size: clamp(20px, 2.1vw, 34px);
+  font-weight: 800;
+  margin-top: 8px;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 18px; }
 .panel { border: 1px solid var(--border); background: var(--panel); border-radius: 24px; padding: 20px; }
 .panel h2 { margin-top: 0; }
@@ -88,6 +105,10 @@ th, td { border-bottom: 1px solid var(--border); padding: 12px; vertical-align: 
 .badge.Review { background: rgba(255,209,102,0.18); color: var(--warning); }
 .reason-pill { display: inline-block; margin: 2px 6px 2px 0; padding: 4px 8px; border-radius: 999px; background: rgba(255,255,255,0.06); color: var(--muted); }
 .kv { display: grid; grid-template-columns: 1fr auto; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+@media (max-width: 1500px) {
+  .metrics-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+}
+
 @media (max-width: 1200px) {
   .app-shell { grid-template-columns: 1fr; }
   .sidebar { border-right: 0; border-bottom: 1px solid var(--border); }
