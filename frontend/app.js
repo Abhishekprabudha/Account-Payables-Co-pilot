@@ -133,6 +133,47 @@ async function analyzeWithFiles(contractFile, erpFile, invoiceFile) {
   }
 }
 
+function buildSamplePathCandidates(fileName) {
+  const pathParts = window.location.pathname.split('/').filter(Boolean);
+  const candidates = new Set([
+    `../sample_data/${fileName}`,
+    `./sample_data/${fileName}`,
+    `/sample_data/${fileName}`,
+  ]);
+
+  if (pathParts.length > 0) {
+    candidates.add(`/${pathParts[0]}/sample_data/${fileName}`);
+  }
+
+  if (pathParts.length > 1) {
+    const parentPath = pathParts.slice(0, -1).join('/');
+    candidates.add(`/${parentPath}/../sample_data/${fileName}`);
+    candidates.add(`/${parentPath}/sample_data/${fileName}`);
+  }
+
+  return Array.from(candidates);
+}
+
+async function fetchSampleFile(fileName) {
+  const attempts = [];
+  const candidates = buildSamplePathCandidates(fileName);
+
+  for (const url of candidates) {
+    try {
+      const res = await fetch(url);
+      attempts.push(`${url} (${res.status})`);
+      if (!res.ok) continue;
+
+      const blob = await res.blob();
+      return new File([blob], fileName, { type: blob.type || 'application/octet-stream' });
+    } catch (error) {
+      attempts.push(`${url} (network error)`);
+    }
+  }
+
+  throw new Error(`Unable to locate ${fileName}. Tried: ${attempts.join(', ')}`);
+}
+
 el('analyzeBtn').addEventListener('click', () => {
   const contract = el('contractFile').files[0];
   const erp = el('erpFile').files[0];
@@ -148,20 +189,17 @@ el('decisionFilter').addEventListener('input', applyFilter);
 el('downloadDecisionsBtn').addEventListener('click', downloadDecisionDump);
 
 el('demoBtn').addEventListener('click', async () => {
-  const paths = [
-    '../sample_data/3PL_Aggregator_Carrier_Master_Transportation_Agreement.docx',
-    '../sample_data/Carrier_ERP_Raw_Performance_March_2026.xlsx',
-    '../sample_data/Carrier_Service_Invoice_March_2026.xlsx',
+  const sampleFiles = [
+    '3PL_Aggregator_Carrier_Master_Transportation_Agreement.docx',
+    'Carrier_ERP_Raw_Performance_March_2026.xlsx',
+    'Carrier_Service_Invoice_March_2026.xlsx',
   ];
+
   try {
-    const files = await Promise.all(paths.map(async (path) => {
-      const res = await fetch(path);
-      const blob = await res.blob();
-      const name = path.split('/').pop();
-      return new File([blob], name, { type: blob.type || 'application/octet-stream' });
-    }));
+    const files = await Promise.all(sampleFiles.map((fileName) => fetchSampleFile(fileName)));
     analyzeWithFiles(files[0], files[1], files[2]);
   } catch (e) {
-    alert('Demo files are available when the sample_data folder is served with the repo.');
+    const detail = e && e.message ? `\n\n${e.message}` : '';
+    alert(`Unable to load demo sample files from this deployment.${detail}`);
   }
 });
